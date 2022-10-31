@@ -1196,8 +1196,11 @@ end
 -----------------------------------------
 
 function Atr_LogMsg (itemlink, itemcount, price, numstacks)
+	if not itemlink then -- this should be investigated.
+		itemlink = "Unknown Item Link"
+	end
 
-	local logmsg = string.format (ZT("Auction created for %s"), itemlink);
+	local logmsg = string.format (ZT("Auction created for %s"), (itemlink);
 	
 	if (numstacks > 1) then
 		logmsg = string.format (ZT("%d auctions created for %s"), numstacks, itemlink);

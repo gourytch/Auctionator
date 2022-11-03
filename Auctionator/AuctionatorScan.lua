@@ -300,13 +300,13 @@ function AtrSearch:AnalyzeResultsPage()
 
 	local numBatchAuctions, totalAuctions = GetNumAuctionItems("list");
 
-	if (self.current_page == 1 and totalAuctions > 5000) then -- give Blizz servers a break
-		Atr_Error_Display (ZT("Too many results\n\nPlease narrow your search"));
-		return true;  -- done
-	end
+	-- if (self.current_page == 1 and totalAuctions > 5000) then -- give Blizz servers a break
+	-- 	Atr_Error_Display (ZT("Too many results\n\nPlease narrow your search"));
+	-- 	return true;  -- done
+	-- end
 
 	if (totalAuctions >= 50) then
-		Atr_SetMessage (string.format (ZT("Scanning auctions: page %d"), self.current_page));
+		Atr_SetMessage (string.format (ZT("Scanning %d auctions: page [%d/%d]"), totalAuctions, self.current_page, (totalAuctions + 49) / 50));
 	end
 
 	-- analyze
@@ -327,7 +327,7 @@ function AtrSearch:AnalyzeResultsPage()
 			
 			local exactMatch = zc.StringSame (name, self.searchText);
 
-			if (exactMatch or not self.exact) then
+			if (name ~= nil and (exactMatch or not self.exact)) then
 
 				if (self.items[name] == nil) then
 					self.items[name] = Atr_FindScanAndInit (name);
@@ -581,7 +581,11 @@ function AtrSearch:Continue()
 
 		queryString = zc.UTF8_Truncate (queryString,63);	-- attempting to reduce number of disconnects
 
-		QueryAuctionItems (queryString, minLevel, maxLevel, nil, itemClass, itemSubclass, self.current_page, nil, nil);
+		if (queryString == "*") then
+			QueryAuctionItems ("", nil, nil, nil, nil, nil, self.current_page, nil, nil);
+		else 
+			QueryAuctionItems (queryString, minLevel, maxLevel, nil, itemClass, itemSubclass, self.current_page, nil, nil);
+		end
 
 		self.query_sent_when	= gAtr_ptime;
 		self.processing_state	= KM_POSTQUERY;
